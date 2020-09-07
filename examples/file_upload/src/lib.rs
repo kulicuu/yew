@@ -3,7 +3,7 @@
 
 use wasm_bindgen::prelude::*;
 
-
+use yew::prelude::*;
 use yew::services::reader::{File, FileChunk, FileData, ReaderService, ReaderTask};
 use yew::{html, ChangeData, Component, ComponentLink, Html, ShouldRender};
 
