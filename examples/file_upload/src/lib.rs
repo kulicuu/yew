@@ -1,5 +1,9 @@
 #![recursion_limit = "256"]
 
+
+use wasm_bindgen::prelude::*;
+
+
 use yew::services::reader::{File, FileChunk, FileData, ReaderService, ReaderTask};
 use yew::{html, ChangeData, Component, ComponentLink, Html, ShouldRender};
 
@@ -43,14 +47,15 @@ impl Component for Model {
                 self.files.push(info);
             }
             Msg::Files(files, chunks) => {
+                let mut reader_svc = ReaderService::new();
                 for file in files.into_iter() {
                     let task = {
                         if chunks {
                             let callback = self.link.callback(Msg::Chunk);
-                            ReaderService::read_file_by_chunks(file, callback, 10).unwrap()
+                            ReaderService::read_file_by_chunks(&mut reader_svc, file, callback, 10).unwrap()
                         } else {
                             let callback = self.link.callback(Msg::Loaded);
-                            ReaderService::read_file(file, callback).unwrap()
+                            ReaderService::read_file(&mut reader_svc, file, callback).unwrap()
                         }
                     };
                     self.tasks.push(task);
@@ -104,4 +109,10 @@ impl Model {
             <li>{ data }</li>
         }
     }
+}
+
+
+#[wasm_bindgen(start)]
+pub fn run_app() {
+    App::<Model>::new().mount_to_body();
 }
